@@ -1,75 +1,63 @@
-const { randomUUID } = require("crypto");
-
-let contacts = [
-  {
-    id: randomUUID(),
-    name: "João",
-    email: "joao@email.com",
-    phone: "16999323232",
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    name: "Jose",
-    email: "jose@email.com",
-    phone: "169995454332",
-    category_id: randomUUID(),
-  },
-];
+const db = require("../../database");
 
 // O Repository NUNCA deve lidar com regras de negócio. Ele só serve para
 // conectar o app com a base de dados.
 // Logo, nunca teremos um if ou reject da Promise nele, quem cuida disso é o Controller
 class ContactsRepository {
-  findAll() {
-    return new Promise((resolve) => resolve(contacts));
+  async findAll(orderBy = "ASC") {
+    const direction = orderBy.toUpperCase() === "DESC" ? "DESC" : "ASC";
+
+    const rows = await db.query(`SELECT * FROM contacts ORDER BY name ${direction}`);
+    return rows;
   }
 
-  findById(id) {
-    return new Promise((resolve) => resolve(contacts.find((contact) => contact.id === id)));
+  async findById(id) {
+    // Problema: Se tentar buscar por um id nao no formato uuid o app quebra
+    const [row] = await db.query("SELECT * FROM contacts WHERE id = $1", [id]);
+    return row;
   }
 
-  findByEmail(email) {
-    return new Promise((resolve) => resolve(contacts.find((contact) => contact.email === email)));
+  async findByEmail(email) {
+    const [row] = await db.query("SELECT * FROM contacts WHERE email = $1", [email]);
+    return row;
   }
 
-  create({ name, email, phone, category_id }) {
-    return new Promise((resolve) => {
-      const newContact = {
-        id: randomUUID,
-        name,
-        email,
-        phone,
-        category_id,
-      };
+  async create({ name, email, phone, category_id }) {
+    // Ao passar INSERT INTO .... VALUES(${name}, ${email}, ${phone}, ${category_id})
+    // estamos sujeitos a SQL Injection.
+    // Passando os valores como segundo parametro a lib pg nos protege!
+    const [row] = await db.query(
+      `
+      INSERT INTO contacts(name, email, phone, category_id)
+      VALUES($1, $2, $3, $4)
+      RETURNING *
+      `,
+      [name, email, phone, category_id]
+    );
 
-      contacts.push(newContact);
-
-      resolve(newContact);
-    });
+    return row;
   }
 
-  update(id, { name, email, phone, category_id }) {
-    return new Promise((resolve) => {
-      const updatedContact = {
-        id,
-        name,
-        email,
-        phone,
-        category_id,
-      };
+  async update(id, { name, email, phone, category_id }) {
+    const [row] = await db.query(
+      `
+        UPDATE contacts
+        SET name = $1, email = $2, phone = $3, category_id = $4
+        WHERE id = $5
+        RETURNING *
+      `,
+      [name, email, phone, category_id, id]
+    );
 
-      contacts = contacts.map((contact) => (contact.id === id ? updatedContact : contact));
+    console.log(4);
 
-      resolve(updatedContact);
-    });
+    return row;
   }
 
-  delete(id) {
-    return new Promise((resolve) => {
-      contacts = contacts.filter((contact) => contact.id !== id);
-      resolve();
-    });
+  async delete(id) {
+    const deleteOp = await db.query("DELETE FROM contacts WHERE id = $1", [id]);
+
+    return deleteOp;
   }
 }
 

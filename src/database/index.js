@@ -12,7 +12,7 @@ const client = new Client({
 
 client.connect();
 
-module.exports.query = async (query) => {
-  const { rows } = await client.query(query);
+module.exports.query = async (query, values) => {
+  const { rows } = await client.query(query, values);
   return rows;
 };
