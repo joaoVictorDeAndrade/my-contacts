@@ -9,6 +9,7 @@
     "dev": "node --watch --no-warnings src/index.js"
   },
   "dependencies": {
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "pg": "^8.13.1"
   }
 }
