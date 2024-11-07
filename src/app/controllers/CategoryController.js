@@ -9,8 +9,6 @@ class CategoryController {
     response.json(categories);
   }
 
-  async show(request, response) {}
-
   async store(request, response) {
     const { name } = request.body;
 
@@ -22,8 +20,6 @@ class CategoryController {
 
     response.send(category);
   }
-
-  async update(request, response) {}
 
   async delete(request, response) {
     const { id } = request.params;

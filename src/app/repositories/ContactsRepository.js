@@ -17,7 +17,6 @@ class ContactsRepository {
   }
 
   async findById(id) {
-    // Problema: Se tentar buscar por um id nao no formato uuid o app quebra
     const [row] = await db.query(
       `
       SELECT contacts.*, categories.name AS category_name
