@@ -9,8 +9,6 @@ class CategoriesRepository {
     return rows;
   }
 
-  async findById() {}
-
   async create(name) {
     const [row] = await db.query(
       `
@@ -23,8 +21,6 @@ class CategoriesRepository {
 
     return row;
   }
-
-  async update() {}
 
   async delete(id) {
     const deleteOp = await db.query(
