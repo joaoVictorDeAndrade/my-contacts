@@ -49,8 +49,6 @@ class ContactsRepository {
       [name, email, phone, category_id, id]
     );
 
-    console.log(4);
-
     return row;
   }
 

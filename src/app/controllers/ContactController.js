@@ -1,4 +1,5 @@
 const ContactsRepository = require("../repositories/ContactsRepository");
+// const { validate: isUuid } = require("uuid");
 
 class ContactController {
   async index(request, response) {
@@ -42,9 +43,14 @@ class ContactController {
     const { id } = request.params;
     const { name, email, phone, category_id } = request.body;
 
+    // if (!isUuid(id)) return response.status(400).json({ error: "Invalid ID" });
+
     if (!name) {
       return response.status(400).json({ error: "Name is required" });
     }
+
+    // if (category_id && !isUuid(category_id))
+    //   return response.status(400).json({ error: "Invalid Category ID" });
 
     const contactExist = await ContactsRepository.findById(id);
 
