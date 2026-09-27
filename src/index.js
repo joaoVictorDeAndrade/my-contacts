@@ -4,6 +4,7 @@ require("express-async-errors");
 const routes = require("./routes");
 const cors = require("./app/middlewares/cors");
 const errorHandler = require("./app/middlewares/errorHandler");
+const config = require("./config");
 
 const app = express();
 
@@ -12,4 +13,6 @@ app.use(cors);
 app.use(routes);
 app.use(errorHandler);
 
-app.listen(3001, () => console.log("🔥 Server running at http://localhost:3001"));
+app.listen(config.port, () =>
+  console.log(`🔥 Server running at http://localhost:${config.port}`)
+);
